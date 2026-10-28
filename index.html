@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FileForge — free, private image and text tools that run directly in your browser.">
+<title>FileForge — Tools for your files</title>
+<style>
+:root{--bg:#0a0d12;--panel:#111720;--panel2:#151e29;--text:#edf3fa;--muted:#91a0b3;--line:#273444;--accent:#a6f36b;--accent2:#d6ffad;--danger:#ff8d8d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit}
+.topbar{height:74px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,calc((100vw - 1180px)/2))}
+.logo{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:-.04em;font-size:20px;text-decoration:none}
+.logo-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--accent);color:#10170b;font-weight:950;font-size:18px}
+.logo span:last-child{color:var(--accent)}
+.top-note{font-size:12px;color:var(--muted)}
+.wrap{max-width:1180px;margin:auto;padding:0 24px}
+.hero{padding:66px 0 42px;display:flex;justify-content:space-between;gap:35px;align-items:flex-end}
+.kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:800}
+h1{font-size:clamp(43px,7vw,76px);line-height:.99;letter-spacing:-.075em;margin:17px 0 18px}
+h1 span{color:var(--accent)}
+.hero p{max-width:590px;color:var(--muted);line-height:1.75;margin:0}
+.privacy{min-width:190px;border:1px solid var(--line);background:var(--panel);padding:15px 17px;border-radius:14px;font-size:12px;line-height:1.6;color:var(--muted)}
+.privacy strong{display:block;color:var(--accent);margin-bottom:3px}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}
+.tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:10px 14px;border-radius:10px;cursor:pointer;font:inherit;font-size:13px}
+.tab.active{background:#1b2820;color:var(--accent);border-color:#3b5831}
+.panel{display:none}.panel.active{display:block}
+.section-title{margin:0 0 7px;font-size:23px;letter-spacing:-.04em}
+.section-desc{color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 24px}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.tool{border:1px solid var(--line);background:var(--panel);border-radius:17px;padding:22px;min-width:0}
+.tool h3{font-size:15px;margin:0 0 7px}
+.tool .desc{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 17px}
+.drop{border:1px dashed #46566a;background:#0c121a;border-radius:13px;padding:24px 16px;text-align:center;cursor:pointer;transition:.2s}
+.drop:hover,.drop.drag{border-color:var(--accent);background:#151f18}
+.drop b{display:block;font-size:13px;margin-bottom:5px}.drop small{color:var(--muted);font-size:11px}
+input[type=file]{display:none}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+label{font-size:12px;color:var(--muted)}
+select,input[type=number],input[type=text],textarea{font:inherit;color:var(--text);background:#0b1118;border:1px solid var(--line);border-radius:9px;padding:10px 11px;outline:none;max-width:100%}
+select:focus,input:focus,textarea:focus{border-color:var(--accent)}
+select{font-size:12px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#1b2633;color:var(--text);font:inherit;font-size:12px;font-weight:750;text-decoration:none;cursor:pointer;transition:.18s}
+.btn:hover{transform:translateY(-1px);border-color:#738398}
+.btn.primary{background:var(--accent);color:#10170b;border-color:var(--accent)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.status{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px;overflow-wrap:anywhere}
+.status.good{color:var(--accent)}.status.error{color:var(--danger)}
+.preview{display:none;max-width:100%;max-height:240px;object-fit:contain;border-radius:10px;margin-top:14px;background:#080b10}
+textarea{width:100%;min-height:190px;resize:vertical;line-height:1.6;font-size:13px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stat{border:1px solid var(--line);background:#0b1118;border-radius:9px;padding:9px 12px;color:var(--muted);font-size:11px}
+.stat b{color:var(--text);font-size:13px;margin-right:4px}
+.full{grid-column:1/-1}
+footer{border-top:1px solid var(--line);margin-top:55px;padding:22px 0 30px;color:#68798c;font-size:11px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.hidden{display:none!important}
+@media(max-width:760px){.hero{padding-top:45px;display:block}.privacy{margin-top:22px}.tool-grid{grid-template-columns:1fr}.full{grid-column:auto}.top-note{display:none}.wrap{padding:0 17px}.topbar{padding:0 17px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="./"><span class="logo-icon">F</span><span>FileForge</span></a>
+  <div class="top-note">FREE TOOLS · NO ACCOUNT REQUIRED</div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="kicker">Your files, your rules</div>
+      <h1>Make files<br><span>work for you.</span></h1>
+      <p>Simple tools for images and text. Convert, compress, count and clean up — right in your browser, without uploading your files to a server.</p>
+    </div>
+    <div class="privacy"><strong>↗ Processed on your device</strong>Your selected files stay in your browser for these tools. Nothing is uploaded by this page.</div>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Tool categories">
+    <button class="tab active" data-tab="images">▧ Image tools</button>
+    <button class="tab" data-tab="text">¶ Text tools</button>
+  </div>
+
+  <section class="panel active" id="images">
+    <h2 class="section-title">Image toolkit</h2>
+    <p class="section-desc">Convert image formats or reduce image file size. Supported inputs depend on your browser; animated images are processed as a single still frame.</p>
+    <div class="tool-grid">
+      <article class="tool">
+        <h3>01 / Image converter</h3>
+        <p class="desc">Convert an image to PNG, JPEG or WebP.</p>
+        <label class="drop" id="convertDrop" for="convertFile"><b>＋ Choose an image</b><small>or drag and drop it here</small></label>
+        <input id="convertFile" type="file" accept="image/*">
+        <img class="preview" id="convertPreview" alt="Selected image preview">
+        <div class="row">
+          <label for="convertFormat">Output</label>
+          <select id="convertFormat"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select>
+          <button class="btn primary" id="convertBtn" disabled>Convert & download</button>
+        </div>
+        <div class="status" id="convertStatus" aria-live="polite">Choose an image to begin.</div>
+      </article>
+
+      <article class="tool">
+        <h3>02 / Image compressor</h3>
+        <p class="desc">Re-encode an image as JPEG or WebP at a chosen quality.</p>
+        <label class="drop" id="compressDrop" for="compressFile"><b>＋ Choose an image</b><small>or drag and drop it here</small></label>
+        <input id="compressFile" type="file" accept="image/*">
+        <img class="preview" id="compressPreview" alt="Selected image preview">
+        <div class="row">
+          <label for="compressFormat">Format</label>
+          <select id="compressFormat"><option value="image/webp">WebP</option><option value="image/jpeg">JPEG</option></select>
+        </div>
+        <div class="row">
+          <label for="quality">Quality <b id="qualityLabel">75%</b></label>
+          <input id="quality" type="range" min="10" max="100" value="75" style="accent-color:var(--accent);flex:1;min-width:120px">
+          <button class="btn primary" id="compressBtn" disabled>Compress & download</button>
+        </div>
+        <div class="status" id="compressStatus" aria-live="polite">Choose an image to begin.</div>
+      </article>
+      <article class="tool full">
+        <h3>How image processing works</h3>
+        <p class="desc" style="margin-bottom:0">Your browser decodes the selected image and exports a new file locally. JPEG does not support transparency, so transparent areas may become black in some browsers. Compression results vary by image; a new file is not guaranteed to be smaller.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="text">
+    <h2 class="section-title">Text toolkit</h2>
+    <p class="section-desc">Count words, characters and lines, clean up extra whitespace, change letter case, or download your text as a .txt file.</p>
+    <div class="tool-grid">
+      <article class="tool full">
+        <h3>03 / Text workspace</h3>
+        <textarea id="textInput" placeholder="Paste or type your text here…"></textarea>
+        <div class="stats">
+          <div class="stat"><b id="words">0</b> words</div>
+          <div class="stat"><b id="chars">0</b> characters</div>
+          <div class="stat"><b id="noSpaces">0</b> without spaces</div>
+          <div class="stat"><b id="lines">0</b> lines</div>
+          <div class="stat"><b id="reading">0</b> min read</div>
+        </div>
+        <div class="row">
+          <button class="btn" id="upperBtn">UPPERCASE</button>
+          <button class="btn" id="lowerBtn">lowercase</button>
+          <button class="btn" id="trimBtn">Clean whitespace</button>
+          <button class="btn" id="clearBtn">Clear</button>
+          <button class="btn primary" id="downloadTextBtn">Download .txt</button>
+        </div>
+        <div class="status" id="textStatus" aria-live="polite">Your text is processed locally in this browser.</div>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    <span>© FILEFORGE · SMALL TOOLS, LESS FRICTION.</span>
+    <span>NO ACCOUNT · NO SERVER UPLOADS FOR THESE TOOLS</span>
+  </footer>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === btn));
+    document.querySelectorAll(".panel").forEach(x => x.classList.toggle("active", x.id === btn.dataset.tab));
+  });
+});
+
+function setupImageTool(prefix) {
+  const input = $(prefix + "File");
+  const drop = $(prefix + "Drop");
+  const preview = $(prefix + "Preview");
+  const status = $(prefix + "Status");
+  const button = $(prefix === "convert" ? "convertBtn" : "compressBtn");
+  let file = null;
+  let image = null;
+
+  function setFile(next) {
+    if (!next) return;
+    if (!next.type.startsWith("image/")) {
+      status.className = "status error";
+      status.textContent = "Please choose a supported image file.";
+      return;
+    }
+    file = next;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      image = img;
+      preview.src = url;
+      preview.style.display = "block";
+      button.disabled = false;
+      status.className = "status";
+      status.textContent = `${file.name} · ${img.naturalWidth} × ${img.naturalHeight} · ${formatBytes(file.size)}`;
+    };
+    img.onerror = () => {
+      image = null;
+      button.disabled = true;
+      status.className = "status error";
+      status.textContent = "This image could not be opened by your browser.";
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  }
+
+  input.addEventListener("change", () => setFile(input.files[0]));
+  ["dragenter","dragover"].forEach(eventName => drop.addEventListener(eventName, e => {
+    e.preventDefault(); drop.classList.add("drag");
+  }));
+  ["dragleave","drop"].forEach(eventName => drop.addEventListener(eventName, e => {
+    e.preventDefault(); drop.classList.remove("drag");
+  }));
+  drop.addEventListener("drop", e => setFile(e.dataTransfer.files[0]));
+
+  button.addEventListener("click", () => {
+    if (!image || !file) return;
+    const isConvert = prefix === "convert";
+    const type = isConvert ? $("convertFormat").value : $("compressFormat").value;
+    const quality = isConvert ? 0.92 : Number($("quality").value) / 100;
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const ctx = canvas.getContext("2d");
+    if (type === "image/jpeg") {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(image, 0, 0);
+    canvas.toBlob(blob => {
+      if (!blob) {
+        status.className = "status error";
+        status.textContent = "Your browser could not export this format.";
+        return;
+      }
+      const ext = type.split("/")[1].replace("jpeg","jpg");
+      const base = file.name.replace(/\.[^.]+$/, "");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${base}-${isConvert ? "converted" : "compressed"}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      const delta = file.size ? Math.round((1 - blob.size / file.size) * 100) : 0;
+      status.className = "status good";
+      status.textContent = `Downloaded ${formatBytes(blob.size)}. ` +
+        (blob.size < file.size ? `${delta}% smaller than the original.` :
+        blob.size > file.size ? `${Math.abs(delta)}% larger than the original.` : "Same size as the original.");
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }, type, quality);
+  });
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+setupImageTool("convert");
+setupImageTool("compress");
+
+$("quality").addEventListener("input", () => {
+  $("qualityLabel").textContent = $("quality").value + "%";
+});
+
+const textInput = $("textInput");
+function updateStats() {
+  const value = textInput.value;
+  const trimmed = value.trim();
+  $("words").textContent = trimmed ? trimmed.split(/\s+/u).length : 0;
+  $("chars").textContent = value.length;
+  $("noSpaces").textContent = value.replace(/\s/g, "").length;
+  $("lines").textContent = value.length ? value.split(/\r\n|\r|\n/).length : 0;
+  $("reading").textContent = trimmed ? Math.max(1, Math.ceil(trimmed.split(/\s+/u).length / 200)) : 0;
+}
+textInput.addEventListener("input", updateStats);
+$("upperBtn").addEventListener("click", () => { textInput.value = textInput.value.toLocaleUpperCase(); updateStats(); });
+$("lowerBtn").addEventListener("click", () => { textInput.value = textInput.value.toLocaleLowerCase(); updateStats(); });
+$("trimBtn").addEventListener("click", () => {
+  textInput.value = textInput.value.split(/\r\n|\r|\n/).map(line => line.trim().replace(/[ \t]+/g, " ")).join("\n").trim();
+  updateStats();
+  $("textStatus").textContent = "Extra whitespace cleaned.";
+});
+$("clearBtn").addEventListener("click", () => { textInput.value = ""; updateStats(); textInput.focus(); });
+$("downloadTextBtn").addEventListener("click", () => {
+  const blob = new Blob([textInput.value], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "fileforge-text.txt"; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  $("textStatus").textContent = "Text file downloaded.";
+});
+</script>
+</body>
+</html>
